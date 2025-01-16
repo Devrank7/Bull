@@ -5,6 +5,7 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium_stealth import stealth
 
 
 def open_ads_power_profile(profile_id):
@@ -60,6 +61,29 @@ def run_clicker(args):
         requests.get(close_url)
 
 
+def antibot_run(profile_id):
+    chrome_driver_path, debugger_address, close_url = open_ads_power_profile(profile_id)
+    driver = setup_driver(chrome_driver_path, debugger_address)
+    print('open')
+    try:
+        stealth(driver,
+                languages=["en-US", "en"],
+                vendor="Google Inc.",
+                platform="Win32",
+                webgl_vendor="Intel Inc.",
+                renderer="Intel Iris OpenGL Engine",
+                fix_hairline=True,
+                )
+        driver.get("https://bot.sannysoft.com/")
+        time.sleep(100)
+    except Exception as e:
+        print(f"Помилка: {e}")
+    finally:
+        print('close')
+        driver.quit()
+        requests.get(close_url)
+
+
 profile_ids = ["ksotjs2", "ksowkde"]
 
 
@@ -70,4 +94,4 @@ def run(max_click, min_click):
 
 
 if __name__ == '__main__':
-    run(max_click=5, min_click=5)
+    antibot_run('ksowkde')
