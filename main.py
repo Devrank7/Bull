@@ -76,7 +76,7 @@ def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_s
             print(Fore.RED + f"Counter updated to {counter}" + Style.RESET_ALL)
             if counter >= len(profile_ids1):
                 run_button.config(state=tk.NORMAL)
-                console_label.config(text='Успешно присоединено! Начинаю кликание', fg="green")
+                console_label.config(text='Успішно приєднано! Починаю клікання', fg="green")
         is_slow = False
         x, y = 150 + random.randint(-10, 10), 300 + random.randint(-10, 10)  # x = 700 y = 300
         element = driver.execute_script("return document.elementFromPoint(arguments[0], arguments[1]);", x, y)
@@ -114,30 +114,6 @@ def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_s
         requests.get(close_url)
 
 
-def test_run(profile_id, max_click, min_click):
-    global is_procecing, counter
-    try:
-        print(f"Starting {profile_id}")
-        time.sleep(random.uniform(3, 5))
-        print(f"Max click: {max_click}")
-        time.sleep(random.uniform(3, 5))
-        print(f"Min click: {min_click}")
-        time.sleep(random.uniform(3, 5))
-        with counter_lock:
-            counter += 1
-            print(Fore.RED + f"Counter updated to {counter}" + Style.RESET_ALL)
-            if counter >= len(profile_ids1):
-                run_button.config(state=tk.NORMAL)
-                console_label.config(text='Успешно присоединено! Начинаю кликание', fg="green")
-        while is_procecing:
-            time.sleep(1)
-            print(f"Executing {profile_id} \n")
-    except Exception as e:
-        print(e)
-    finally:
-        print(f"Finalizing {profile_id}")
-
-
 def run(max_click, min_click, sleep_chance, min_sleep, max_sleep):
     threads = []
     global is_procecing, current_thread
@@ -171,19 +147,19 @@ def toggle_run():
             run_button.config(state=tk.DISABLED)
             is_procecing = True
             print(f"[DEBUG] is_procecing set to {is_procecing}")
-            console_label.config(text='⚠ Присоединяюсь к браузерам. Подождите!!!', fg="red")
+            console_label.config(text='⚠ Приєднуюся до браузерів. Зачекайте!!!', fg="red")
             counter = 0
             current_thread = threading.Thread(target=run,
                                               args=(max_click, min_click, sleep_chance, min_sleep, max_sleep),
                                               daemon=True)
             current_thread.start()
         else:
-            warn = f"Поток {current_thread.name if current_thread else 'None'} еще не завершен!"
+            warn = f"Потік {current_thread.name if current_thread else 'None'} ще не завершено!"
             print(warn)
             console_label.config(text=warn, fg="red")
     else:
         is_procecing = False
-        console_label.config(text="Подождите 5-15 секунд завершаем все процессы! Не клацаете никуда!")
+        console_label.config(text="Зачекайте 5-15 секунд завершуємо всі процеси! Не клацайте нікуди!")
         print(f"[DEBUG] is_procecing set to {is_procecing}")
         print('OK')
         current_thread.join() if current_thread else None
@@ -196,7 +172,8 @@ def toggle_run():
         reset_button.config(state=tk.NORMAL)
         run_button.config(text="Запустить")
         console_label.config(
-            text='Успешно отменено! Нажмите запустить, чтобы подключится к браузерам и начать автокликать', fg="green")
+            text='Успішно скасовано! Натисніть запустити, щоб підключитися до браузерів і почати автоклікання',
+            fg="green")
 
 
 def enforce_range(entry_widget, min_value=0, max_value=1):
@@ -278,17 +255,17 @@ def main():
     entry2.insert(0, "0.17")
     entry2.pack(pady=2)
     entry2.bind("<FocusOut>", lambda event: enforce_range(entry2))
-    tk.Label(root, text="Шанс засыпания 1.0 это 1% после клика", anchor="w").pack(pady=2)
+    tk.Label(root, text="Шанс засинання 1.0 це 1% після кліку", anchor="w").pack(pady=2)
     entry3 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd, '%P'))
     entry3.insert(0, "0.1")
     entry3.pack(pady=2)
     entry3.bind("<FocusOut>", lambda event: enforce_range(entry3))
-    tk.Label(root, text="Минимальный отрезок сна", anchor="w").pack(pady=2)
+    tk.Label(root, text="Мінімальний відрізок сну", anchor="w").pack(pady=2)
     entry4 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd1, '%P'))
     entry4.insert(0, "5.0")
     entry4.pack(pady=2)
     entry4.bind("<FocusOut>", lambda event: enforce_range(entry4, 2, 60))
-    tk.Label(root, text="Максимальний отрезок сна:", anchor="w").pack(pady=2)
+    tk.Label(root, text="Максимальний відрізок сну:", anchor="w").pack(pady=2)
     entry5 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd2, '%P'))
     entry5.insert(0, "15.0")
     entry5.pack(pady=2)
@@ -299,7 +276,7 @@ def main():
     run_button.pack(pady=10)
     console_label = tk.Label(root, text="", fg="green")
     console_label.pack(pady=10)
-    console_label.config(text="Нажмите запустить, чтобы подключится к браузерам и начать автокликать")
+    console_label.config(text="Натисніть запустити, щоб підключитися до браузерів і почати автоклікання")
     root.mainloop()
 
 
