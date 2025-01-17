@@ -54,10 +54,10 @@ def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_s
         chrome_driver_path, debugger_address, close_url = open_ads_power_profile(profile_id)
         driver = setup_driver(chrome_driver_path, debugger_address)
     except Exception as e:
-        console_label.config(text=f'Случилась ошибка {str(e)}. \n Наверное Ads power не запущен.', fg="red")
+        console_label.config(text=f'Сталась помилка {str(e)}. \n Мабуть Ads power не запущений.', fg="red")
         is_procecing = False
         current_thread = None
-        run_button.config(state=tk.NORMAL, text="Запустить")
+        run_button.config(state=tk.NORMAL, text="Запустити")
         entry1.config(state=tk.NORMAL)
         entry2.config(state=tk.NORMAL)
         entry3.config(state=tk.NORMAL)
@@ -157,7 +157,7 @@ def run(max_click, min_click, sleep_chance, min_sleep, max_sleep, slow_chance, s
 
 def toggle_run():
     global current_thread, is_procecing, counter
-    if run_button.config('text')[-1] == "Запустить":
+    if run_button.config('text')[-1] == "Запустити":
         if (current_thread is None) or (current_thread is not None and not current_thread.is_alive()):
             max_click = float(entry1.get())
             min_click = float(entry2.get())
@@ -205,7 +205,7 @@ def toggle_run():
         entry6.config(state=tk.NORMAL)
         entry7.config(state=tk.NORMAL)
         reset_button.config(state=tk.NORMAL)
-        run_button.config(text="Запустить")
+        run_button.config(text="Запустити")
         console_label.config(
             text='Успішно скасовано! Натисніть запустити, щоб підключитися до браузерів і почати автоклікання',
             fg="green")
@@ -322,7 +322,7 @@ def main():
     entry7.bind("<FocusOut>", lambda event: enforce_range(entry7))
     reset_button = tk.Button(root, text="Скинути параметри", command=reset_defaults)
     reset_button.pack(pady=10)
-    run_button = tk.Button(root, text="Запустить", command=toggle_run)
+    run_button = tk.Button(root, text="Запустити", command=toggle_run)
     run_button.pack(pady=10)
     console_label = tk.Label(root, text="", fg="green")
     console_label.pack(pady=10)
