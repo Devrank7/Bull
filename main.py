@@ -49,9 +49,24 @@ def setup_driver(chrome_driver_path, debugger_address):
 
 
 def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_sleep, slow_chance, slow_strength):
-    global counter
-    chrome_driver_path, debugger_address, close_url = open_ads_power_profile(profile_id)
-    driver = setup_driver(chrome_driver_path, debugger_address)
+    global counter, is_procecing, current_thread
+    try:
+        chrome_driver_path, debugger_address, close_url = open_ads_power_profile(profile_id)
+        driver = setup_driver(chrome_driver_path, debugger_address)
+    except Exception as e:
+        console_label.config(text=f'Случилась ошибка {str(e)}. \n Наверное Ads power не запущен.', fg="red")
+        is_procecing = False
+        current_thread = None
+        run_button.config(state=tk.NORMAL, text="Запустить")
+        entry1.config(state=tk.NORMAL)
+        entry2.config(state=tk.NORMAL)
+        entry3.config(state=tk.NORMAL)
+        entry4.config(state=tk.NORMAL)
+        entry5.config(state=tk.NORMAL)
+        entry6.config(state=tk.NORMAL)
+        entry7.config(state=tk.NORMAL)
+        reset_button.config(state=tk.NORMAL)
+        return
     try:
         print("Open")
         stealth(driver,
@@ -266,6 +281,7 @@ def main():
     root.geometry("780x640")
     tk.Label(root, text=APP_TITLE, font=("Arial", 14, "bold"), fg="blue").pack(pady=10)
     tk.Label(root, text="⚠ Усі значення налаштовані для мінімізації ризику бана", fg="red").pack(pady=10)
+    tk.Label(root, text="⚠ Обов'язково включіть Ads Power!", fg="red").pack(pady=10)
     validate_cmd = root.register(validate_input)
     validate_cmd1 = root.register(validate_input1)
     validate_cmd2 = root.register(validate_input2)
