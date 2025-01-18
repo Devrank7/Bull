@@ -1,4 +1,5 @@
 import datetime
+import json
 import random
 import threading
 import time
@@ -30,6 +31,10 @@ element_xpath1 = '//button[@id="bigCookie"]'
 element_xpath2 = '//canvas[@data-sentry-element="Stage"]'
 X1, Y1 = 150, 300
 X2, Y2 = 700, 300
+with open("profile.txt", "r") as f:
+    profiles = f.read().split("\n")
+profile_ids4 = profiles
+print(f"pr: {profile_ids4}")
 
 
 def open_ads_power_profile(profile_id):
@@ -90,7 +95,7 @@ def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_s
         print("Hide driver,,,,")
         if not is_procecing:
             raise AssertionError
-        driver.get(URL)
+        driver.get(URL1)
         if not is_procecing:
             raise AssertionError
         time.sleep(2)
@@ -106,7 +111,8 @@ def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_s
         is_slow = False
         # x, y = X1 + random.randint(-10, 10), Y1 + random.randint(-10, 10)  # x = 700 y = 300
         # element = driver.execute_script("return document.elementFromPoint(arguments[0], arguments[1]);", x, y)
-        element = driver.find_element("xpath", element_xpath1)
+        element = driver.find_element("xpath", element_xpath2)
+        print(f'element: {str(element)}')
         need_to_take = False
         offset_x, offset_y = 0, 0
         sleep_data = datetime.datetime.now() + datetime.timedelta(
@@ -125,7 +131,7 @@ def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_s
             if random.randrange(0, 400) == 0 or need_to_take:
                 need_to_take = False
                 # x, y = 150 + random.randint(-10, 10), 300 + random.randint(-10, 10)
-                element = driver.find_element("xpath", element_xpath1)
+                element = driver.find_element("xpath", element_xpath2)
             if random.randrange(0, 50) == 5:
                 offset_x, offset_y = random.randint(-5, 5), random.randint(-5, 5)
             if not isinstance(element, WebElement):
@@ -138,8 +144,10 @@ def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_s
                     actions = ActionChains(driver)
                     print(f"offset x: {offset_x}, offset y: {offset_y}")
                     actions.move_to_element_with_offset(element, offset_x, offset_y).click().perform()
+                    print('norm 0')
                 else:
                     element.click()
+                    print('norm 1')
             except Exception:
                 time.sleep(0.1)
                 print('not1')
@@ -343,17 +351,17 @@ def main():
     entry2.insert(0, "0.3")
     entry2.pack(pady=2)
     entry2.bind("<FocusOut>", lambda event: enforce_range(entry2))
-    tk.Label(root, text="Шанс засинання 1.0 це 1% після кліку", anchor="w").pack(pady=2)
+    tk.Label(root, text="Шанс короткого засинання 1.0 це 1% після кліку", anchor="w").pack(pady=2)
     entry3 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd, '%P'))
     entry3.insert(0, "0.1")
     entry3.pack(pady=2)
     entry3.bind("<FocusOut>", lambda event: enforce_range(entry3))
-    tk.Label(root, text="Мінімальний відрізок короткого сну", anchor="w").pack(pady=2)
+    tk.Label(root, text="Мінімальний відрізок короткого сну (секунди): ", anchor="w").pack(pady=2)
     entry4 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd1, '%P'))
     entry4.insert(0, "5.0")
     entry4.pack(pady=2)
     entry4.bind("<FocusOut>", lambda event: enforce_range(entry4, 2, 60))
-    tk.Label(root, text="Максимальний відрізок короткого сну:", anchor="w").pack(pady=2)
+    tk.Label(root, text="Максимальний відрізок короткого сну (секунди):", anchor="w").pack(pady=2)
     entry5 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd2, '%P'))
     entry5.insert(0, "15.0")
     entry5.pack(pady=2)
@@ -368,26 +376,26 @@ def main():
     entry7.insert(0, "0.6")
     entry7.pack(pady=2)
     entry7.bind("<FocusOut>", lambda event: enforce_range(entry7))
-    tk.Label(root, text="Минимальная длительность глубокого сна:", anchor="w").pack(pady=2)
+    tk.Label(root, text="Мінімальна тривалість глибокого сну (хвилини):", anchor="w").pack(pady=2)
     entry8 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd2, '%P'))
     entry8.insert(0, "15.0")
     entry8.pack(pady=2)
-    entry8.bind("<FocusOut>", lambda event: enforce_range(entry8))
-    tk.Label(root, text="Максимальная длительность глубокого сна:", anchor="w").pack(pady=2)
+    entry8.bind("<FocusOut>", lambda event: enforce_range(entry8, 4, 120))
+    tk.Label(root, text="Максимальна тривалість глибокого сну (хвилини):", anchor="w").pack(pady=2)
     entry9 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd2, '%P'))
     entry9.insert(0, "25.0")
     entry9.pack(pady=2)
-    entry9.bind("<FocusOut>", lambda event: enforce_range(entry9))
-    tk.Label(root, text="Минимальная длительность обычного режима перед глубоким сном", anchor="w").pack(pady=2)
+    entry9.bind("<FocusOut>", lambda event: enforce_range(entry9, 4, 120))
+    tk.Label(root, text="Мінімальна тривалість звичайного режиму перед глибоким сном (хвилини): ", anchor="w").pack(pady=2)
     entry10 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd2, '%P'))
     entry10.insert(0, "25.0")
     entry10.pack(pady=2)
-    entry10.bind("<FocusOut>", lambda event: enforce_range(entry10))
-    tk.Label(root, text="Максимальная длительность обычного режима перед глубоким сном", anchor="w").pack(pady=2)
+    entry10.bind("<FocusOut>", lambda event: enforce_range(entry10, 4, 120))
+    tk.Label(root, text="Максимальна тривалість звичайного режиму перед глибоким сном (хвилини): ", anchor="w").pack(pady=2)
     entry11 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd2, '%P'))
     entry11.insert(0, "40.0")
     entry11.pack(pady=2)
-    entry11.bind("<FocusOut>", lambda event: enforce_range(entry11))
+    entry11.bind("<FocusOut>", lambda event: enforce_range(entry11, 4, 120))
     reset_button = tk.Button(root, text="Скинути параметри", command=reset_defaults)
     reset_button.pack(pady=10)
     run_button = tk.Button(root, text="Запустити", command=toggle_run)
