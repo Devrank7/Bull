@@ -1,3 +1,4 @@
+import datetime
 import random
 import threading
 import time
@@ -21,7 +22,14 @@ is_procecing = False
 counter = 0
 profile_ids = ["ksotjs2", "ksowkde"]
 profile_ids1 = ["kspg9f5", "kspg9am"]
+profile_ids3 = ["j63rj35", "j64qwa1", "j65ft68", "j65hpjg", "j65ipt3"]
 counter_lock = threading.Lock()
+URL = 'https://orteil.dashnet.org/cookieclicker/'
+URL1 = 'https://tap.eclipse.xyz/'
+element_xpath1 = '//button[@id="bigCookie"]'
+element_xpath2 = '//canvas[@data-sentry-element="Stage"]'
+X1, Y1 = 150, 300
+X2, Y2 = 700, 300
 
 
 def open_ads_power_profile(profile_id):
@@ -48,7 +56,9 @@ def setup_driver(chrome_driver_path, debugger_address):
     return driver
 
 
-def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_sleep, slow_chance, slow_strength):
+def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_sleep, slow_chance, slow_strength,
+                min_deeply_sleep, max_deeply_sleep, min_simple_state,
+                max_simple_state):
     global counter, is_procecing, current_thread
     try:
         chrome_driver_path, debugger_address, close_url = open_ads_power_profile(profile_id)
@@ -80,7 +90,7 @@ def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_s
         print("Hide driver,,,,")
         if not is_procecing:
             raise AssertionError
-        driver.get("https://orteil.dashnet.org/cookieclicker/")
+        driver.get(URL)
         if not is_procecing:
             raise AssertionError
         time.sleep(2)
@@ -94,15 +104,28 @@ def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_s
                 run_button.config(state=tk.NORMAL)
                 console_label.config(text='Успішно приєднано! Починаю клікання', fg="green")
         is_slow = False
-        x, y = 150 + random.randint(-10, 10), 300 + random.randint(-10, 10)  # x = 700 y = 300
-        element = driver.execute_script("return document.elementFromPoint(arguments[0], arguments[1]);", x, y)
+        # x, y = X1 + random.randint(-10, 10), Y1 + random.randint(-10, 10)  # x = 700 y = 300
+        # element = driver.execute_script("return document.elementFromPoint(arguments[0], arguments[1]);", x, y)
+        element = driver.find_element("xpath", element_xpath1)
         need_to_take = False
         offset_x, offset_y = 0, 0
+        sleep_data = datetime.datetime.now() + datetime.timedelta(
+            minutes=round(random.uniform(min_simple_state, max_simple_state), 3))
         while is_procecing:
+            if datetime.datetime.now() > sleep_data:
+                deply_sleep = random.randrange(int(min_deeply_sleep * 60), int(max_deeply_sleep * 60))
+                b = 0
+                while b <= deply_sleep:
+                    time.sleep(1)
+                    b += 1
+                    if not is_procecing:
+                        return
+                sleep_data = datetime.datetime.now() + datetime.timedelta(
+                    minutes=round(random.uniform(min_simple_state, max_simple_state), 3))
             if random.randrange(0, 400) == 0 or need_to_take:
                 need_to_take = False
-                x, y = 150 + random.randint(-10, 10), 300 + random.randint(-10, 10)
-                element = driver.execute_script("return document.elementFromPoint(arguments[0], arguments[1]);", x, y)
+                # x, y = 150 + random.randint(-10, 10), 300 + random.randint(-10, 10)
+                element = driver.find_element("xpath", element_xpath1)
             if random.randrange(0, 50) == 5:
                 offset_x, offset_y = random.randint(-5, 5), random.randint(-5, 5)
             if not isinstance(element, WebElement):
@@ -139,14 +162,17 @@ def run_clicker(profile_id, max_click, min_click, sleep_chance, min_sleep, max_s
         requests.get(close_url)
 
 
-def run(max_click, min_click, sleep_chance, min_sleep, max_sleep, slow_chance, slow_strength):
+def run(max_click, min_click, sleep_chance, min_sleep, max_sleep, slow_chance, slow_strength, min_deeply_sleep,
+        max_deeply_sleep, min_simple_state,
+        max_simple_state):
     threads = []
     global is_procecing, current_thread
     for profile_id in profile_ids1:
         thread = threading.Thread(target=run_clicker,
                                   args=(
                                       profile_id, max_click, min_click, sleep_chance, min_sleep, max_sleep, slow_chance,
-                                      slow_strength),
+                                      slow_strength, min_deeply_sleep, max_deeply_sleep, min_simple_state,
+                                      max_simple_state),
                                   daemon=True)
         threads.append(thread)
         thread.start()
@@ -166,6 +192,10 @@ def toggle_run():
             max_sleep = float(entry5.get())
             slow_chance = float(entry6.get())
             slow_strength = float(entry7.get())
+            min_deeply_sleep = float(entry8.get())
+            max_deeply_sleep = float(entry9.get())
+            min_simple_state = float(entry10.get())
+            max_simple_state = float(entry11.get())
             entry1.config(state=tk.DISABLED)
             entry2.config(state=tk.DISABLED)
             entry3.config(state=tk.DISABLED)
@@ -173,6 +203,10 @@ def toggle_run():
             entry5.config(state=tk.DISABLED)
             entry6.config(state=tk.DISABLED)
             entry7.config(state=tk.DISABLED)
+            entry8.config(state=tk.DISABLED)
+            entry9.config(state=tk.DISABLED)
+            entry10.config(state=tk.DISABLED)
+            entry11.config(state=tk.DISABLED)
             reset_button.config(state=tk.DISABLED)
             run_button.config(text="Отменить")
             run_button.config(state=tk.DISABLED)
@@ -183,7 +217,8 @@ def toggle_run():
             current_thread = threading.Thread(target=run,
                                               args=(
                                                   max_click, min_click, sleep_chance, min_sleep, max_sleep, slow_chance,
-                                                  slow_strength),
+                                                  slow_strength, min_deeply_sleep, max_deeply_sleep, min_simple_state,
+                                                  max_simple_state,),
                                               daemon=True)
             current_thread.start()
         else:
@@ -204,6 +239,10 @@ def toggle_run():
         entry5.config(state=tk.NORMAL)
         entry6.config(state=tk.NORMAL)
         entry7.config(state=tk.NORMAL)
+        entry8.config(state=tk.NORMAL)
+        entry9.config(state=tk.NORMAL)
+        entry10.config(state=tk.NORMAL)
+        entry11.config(state=tk.NORMAL)
         reset_button.config(state=tk.NORMAL)
         run_button.config(text="Запустити")
         console_label.config(
@@ -272,15 +311,24 @@ def reset_defaults():
         entry6.insert(0, "0.1")
         entry7.delete(0, tk.END)
         entry7.insert(0, "0.6")
+        entry8.delete(0, tk.END)
+        entry8.insert(0, "15.0")
+        entry9.delete(0, tk.END)
+        entry9.insert(0, "25.0")
+        entry10.delete(0, tk.END)
+        entry10.insert(0, "25.0")
+        entry11.delete(0, tk.END)
+        entry11.insert(0, "40.0")
 
 
 def main():
-    global entry1, entry2, entry3, entry4, entry5, entry6, entry7, console_label, reset_button, run_button, console_label
+    global entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry8, entry9, entry10, entry11, console_label, reset_button, run_button, console_label
     root = tk.Tk()
     root.title(APP_TITLE)
-    root.geometry("780x640")
+    root.geometry("1080x920")
     tk.Label(root, text=APP_TITLE, font=("Arial", 14, "bold"), fg="blue").pack(pady=10)
     tk.Label(root, text="⚠ Усі значення налаштовані для мінімізації ризику бана", fg="red").pack(pady=10)
+    tk.Label(root, text="⚠ Рекомендуємо не зміняти значеня!", fg="red").pack(pady=10)
     tk.Label(root, text="⚠ Обов'язково включіть Ads Power!", fg="red").pack(pady=10)
     validate_cmd = root.register(validate_input)
     validate_cmd1 = root.register(validate_input1)
@@ -300,12 +348,12 @@ def main():
     entry3.insert(0, "0.1")
     entry3.pack(pady=2)
     entry3.bind("<FocusOut>", lambda event: enforce_range(entry3))
-    tk.Label(root, text="Мінімальний відрізок сну", anchor="w").pack(pady=2)
+    tk.Label(root, text="Мінімальний відрізок короткого сну", anchor="w").pack(pady=2)
     entry4 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd1, '%P'))
     entry4.insert(0, "5.0")
     entry4.pack(pady=2)
     entry4.bind("<FocusOut>", lambda event: enforce_range(entry4, 2, 60))
-    tk.Label(root, text="Максимальний відрізок сну:", anchor="w").pack(pady=2)
+    tk.Label(root, text="Максимальний відрізок короткого сну:", anchor="w").pack(pady=2)
     entry5 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd2, '%P'))
     entry5.insert(0, "15.0")
     entry5.pack(pady=2)
@@ -320,6 +368,26 @@ def main():
     entry7.insert(0, "0.6")
     entry7.pack(pady=2)
     entry7.bind("<FocusOut>", lambda event: enforce_range(entry7))
+    tk.Label(root, text="Минимальная длительность глубокого сна:", anchor="w").pack(pady=2)
+    entry8 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd2, '%P'))
+    entry8.insert(0, "15.0")
+    entry8.pack(pady=2)
+    entry8.bind("<FocusOut>", lambda event: enforce_range(entry8))
+    tk.Label(root, text="Максимальная длительность глубокого сна:", anchor="w").pack(pady=2)
+    entry9 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd2, '%P'))
+    entry9.insert(0, "25.0")
+    entry9.pack(pady=2)
+    entry9.bind("<FocusOut>", lambda event: enforce_range(entry9))
+    tk.Label(root, text="Минимальная длительность обычного режима перед глубоким сном", anchor="w").pack(pady=2)
+    entry10 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd2, '%P'))
+    entry10.insert(0, "25.0")
+    entry10.pack(pady=2)
+    entry10.bind("<FocusOut>", lambda event: enforce_range(entry10))
+    tk.Label(root, text="Максимальная длительность обычного режима перед глубоким сном", anchor="w").pack(pady=2)
+    entry11 = tk.Entry(root, width=10, validate="key", validatecommand=(validate_cmd2, '%P'))
+    entry11.insert(0, "40.0")
+    entry11.pack(pady=2)
+    entry11.bind("<FocusOut>", lambda event: enforce_range(entry11))
     reset_button = tk.Button(root, text="Скинути параметри", command=reset_defaults)
     reset_button.pack(pady=10)
     run_button = tk.Button(root, text="Запустити", command=toggle_run)
